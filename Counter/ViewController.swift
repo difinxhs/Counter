@@ -28,20 +28,20 @@ class ViewController: UIViewController {
         
         buttonRemoveOne.backgroundColor = .blue
         
-        counterLable.text = "Значение счетчика: 0"
+        counterLable.text = "Значение счетчика: \(counter)"
         
         buttonClear.setImage(UIImage(systemName: "trash"), for: .normal)
         
         buttonClear.setTitle("", for: .normal)
         
-        changeHistory.text = "История изменений:"
+        updateChangeHistory()
         
     }
     
-    private var counter: Int = 0
+    private var counter: Int = UserDefaults.standard.integer(forKey: "counter")
     private var dateFormatter = DateFormatter()
     private var date = Date()
-    private var changeHistoryArray: [String] = ["История изменений: \n"]
+    private var changeHistoryArray: [String] = UserDefaults.standard.array(forKey: "changeHistoryArray") as? [String] ?? []
     
     private func currentDate () -> String {
         
@@ -55,17 +55,25 @@ class ViewController: UIViewController {
         return dateToday1
     }
     
+    private func updateChangeHistory() {
+        changeHistory.text = "История изменений:\n" + changeHistoryArray.joined(separator: "\n")
+    }
+    
     
     @IBAction private func buttonAddOneDidTap(_ sender: Any) {
         counter += 1
         counterLable.text = "Значение счетчика: \(counter)"
       
         let actionDate = currentDate()
-        changeHistoryArray.append("\(actionDate): Значение изменено на +1 \n")
-        changeHistory.text = changeHistoryArray.joined()
+        changeHistoryArray.append("\(actionDate): Значение изменено на +1")
+        
+        updateChangeHistory()
         
         let range = NSMakeRange(changeHistory.text.count - 1, 0)
         changeHistory.scrollRangeToVisible(range)
+        
+        UserDefaults.standard.set(counter, forKey: "counter")
+        UserDefaults.standard.set(changeHistoryArray, forKey: "changeHistoryArray")
     }
     
     @IBAction private func buttonRemoveOneDidTap(_ sender: Any) {
@@ -74,18 +82,23 @@ class ViewController: UIViewController {
             counterLable.text = "Значение счетчика: \(counter)"
             
             let actionDate = currentDate()
-            changeHistoryArray.append("\(actionDate): Значение изменено на -1 \n")
-            changeHistory.text = changeHistoryArray.joined()
+            changeHistoryArray.append("\(actionDate): Значение изменено на -1")
+            
+            updateChangeHistory()
             
             let range = NSMakeRange(changeHistory.text.count - 1, 0)
             changeHistory.scrollRangeToVisible(range)
+            
+            UserDefaults.standard.set(counter, forKey: "counter")
+            UserDefaults.standard.set(changeHistoryArray, forKey: "changeHistoryArray")
             
         } else {
             counterLable.text = "Значение счетчика: 0"
           
             let actionDate = currentDate()
-            changeHistoryArray.append("\(actionDate): Попытка уменьшить значение счетчика ниже 0 \n")
-            changeHistory.text = changeHistoryArray.joined()
+            changeHistoryArray.append("\(actionDate): Попытка уменьшить значение счетчика ниже 0")
+            
+            updateChangeHistory()
             
             let range = NSMakeRange(changeHistory.text.count - 1, 0)
             changeHistory.scrollRangeToVisible(range)
@@ -97,11 +110,13 @@ class ViewController: UIViewController {
         counterLable.text = "Значение счетчика: \(counter)"
       
         let actionDate = currentDate()
-        changeHistoryArray.append("\(actionDate): Значение сброшено \n")
-        changeHistory.text = changeHistoryArray.joined()
+        changeHistoryArray.append("\(actionDate): Значение сброшено")
+        
+        updateChangeHistory()
         
         let range = NSMakeRange(changeHistory.text.count - 1, 0)
         changeHistory.scrollRangeToVisible(range)
+        
+        UserDefaults.standard.set(changeHistoryArray, forKey: "changeHistoryArray")
     }
 }
-
